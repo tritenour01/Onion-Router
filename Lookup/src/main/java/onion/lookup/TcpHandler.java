@@ -7,9 +7,11 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class TcpHandler implements Runnable {
-    Socket sock;
-    BufferedReader input;
-    PrintWriter output;
+    private Socket sock;
+    private BufferedReader input;
+    private PrintWriter output;
+    
+    private RegisterProtocol proto = new RegisterProtocol(this);
     
     TcpHandler(Socket s){
         this.sock = s;
@@ -27,17 +29,18 @@ public class TcpHandler implements Runnable {
     }
     
     public void run(){
-        System.out.println("HEEEEEEEEEEEEEEEEEEEY");
+        System.out.println("TCP handler started");
         try{
             String data;
             while((data = input.readLine()) != null){
                 System.out.println(data);
+                proto.handleInput(data);
             }
         }
         catch(IOException e){
             System.out.println("Caught IOException");
             System.out.println(e);
         }
-        System.out.println("Done");
+        System.out.println("TCP handler exiting");
     }
 }

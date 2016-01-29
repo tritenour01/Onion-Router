@@ -8,9 +8,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class RegistryPing implements Runnable {
-    Socket sock;
-    BufferedReader input;
-    PrintWriter output;
+    private Socket sock;
+    private BufferedReader input;
+    private PrintWriter output;
     
     
     public void run(){
@@ -20,8 +20,12 @@ public class RegistryPing implements Runnable {
     }
     
     private void connect(){
+        ConfigHelper config = ConfigHelper.getInstance();
+        String host = config.getValue("lookupHost");
+        int port = Integer.parseInt(config.getValue("lookupPort"));
+        
         try{
-            sock = new Socket("127.0.0.1", 8083);
+            sock = new Socket(host, port);
             input = new BufferedReader(
                     new InputStreamReader(sock.getInputStream())
             );

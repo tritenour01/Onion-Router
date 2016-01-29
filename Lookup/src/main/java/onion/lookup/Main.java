@@ -8,8 +8,11 @@ public class Main {
     public static void main(String[] args){
         
         try{
-            ServerSocket server = new ServerSocket(8083);
-            System.out.println("Listening on port 8083, waiting for connection");
+            ConfigHelper config = ConfigHelper.getInstance();
+            int port = Integer.parseInt(config.getValue("port"));
+            
+            ServerSocket server = new ServerSocket(port);
+            System.out.println("Listening on port " + port + ", waiting for connection");
             
             while(true){
                 Socket sock = server.accept();
