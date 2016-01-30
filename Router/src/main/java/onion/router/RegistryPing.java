@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import onion.shared.ConfigHelper;
+
 public class RegistryPing implements Runnable {
     private Socket sock;
     private BufferedReader input;

@@ -1,4 +1,4 @@
-package onion.router;
+package onion.shared;
 
 import java.io.FileInputStream;
 import java.util.Properties;
