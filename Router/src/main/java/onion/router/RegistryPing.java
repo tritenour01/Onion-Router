@@ -14,10 +14,24 @@ public class RegistryPing implements Runnable {
     private BufferedReader input;
     private PrintWriter output;
     
-    
     public void run(){
         connect();
-        output.println("test");
+        
+        RegisterProtocol proto = new RegisterProtocol(this);
+        proto.init();
+        
+        try{
+            String data;
+            while(proto.isDone() == false && (data = read()) != null){
+                System.out.println(data);
+                proto.handleInput(data);
+            }
+        }
+        catch(IOException e){
+            System.out.println("Caught IOException");
+            System.out.println(e);
+        }
+        
         disconnect();
     }
     
@@ -51,5 +65,13 @@ public class RegistryPing implements Runnable {
             System.out.println("Caught IOException");
             System.out.println(e);
         }
+    }
+    
+    private String read() throws IOException{
+        return input.readLine();
+    }
+    
+    public void write(String data){
+        output.println(data);
     }
 }

@@ -43,4 +43,8 @@ public class TcpHandler implements Runnable {
         }
         System.out.println("TCP handler exiting");
     }
+    
+    public void write(String data){
+        output.println(data);
+    }
 }
