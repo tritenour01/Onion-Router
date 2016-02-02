@@ -1,5 +1,7 @@
 package onion.lookup;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,6 +17,7 @@ public class RegisterProtocol {
     
     State state = State.INIT;
     int challengeVal;
+    String pubkey;
     
     public RegisterProtocol(TcpHandler handler){
         this.handler = handler;
@@ -46,6 +49,8 @@ public class RegisterProtocol {
                 if(state != State.INIT)
                     return;
                 
+                pubkey = data.get("data").toString();
+                
                 Random rand = new Random();
                 challengeVal = rand.nextInt(1000000);
                 
@@ -62,7 +67,11 @@ public class RegisterProtocol {
                 long val = (long)data.get("data");
                 if(val == challengeVal){
                     response.put("command", "challenge-success");
-                    response.put("data", "required");
+                    
+                    if(DataStore.lookupByKey(pubkey) == null)
+                        response.put("data", "required");
+                    else
+                        response.put("data", "optional");
                     
                     state = State.DATA;
                 }
@@ -77,7 +86,17 @@ public class RegisterProtocol {
                 if(state != State.DATA)
                     return;
                 
+                Map m = (HashMap)data.get("data");
+                RouterInfo info = new RouterInfo();
+                info.setIdKey(pubkey);
+                info.setHost(m.get("host").toString());
+                info.setPort(Integer.parseInt(m.get("port").toString()));
+                
+                DataStore.insert(info);
+                
                 response.put("command", "done");
+                
+                state = State.DONE;
                 
                 break;
             default:

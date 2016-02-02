@@ -24,6 +24,7 @@ public class RegisterProtocol {
     public void init(){
         JSONObject json = new JSONObject();
         json.put("command", "init");
+        json.put("data", "test");
         ping.write(json.toString());
     }
     
