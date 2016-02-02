@@ -13,13 +13,13 @@ public class RegisterProtocol {
         DATA, DONE
     }
     
-    TcpHandler handler;
+    TCPHandler handler;
     
     State state = State.INIT;
     int challengeVal;
     String pubkey;
     
-    public RegisterProtocol(TcpHandler handler){
+    public RegisterProtocol(TCPHandler handler){
         this.handler = handler;
     }
     
@@ -86,13 +86,16 @@ public class RegisterProtocol {
                 if(state != State.DATA)
                     return;
                 
-                Map m = (HashMap)data.get("data");
-                RouterInfo info = new RouterInfo();
-                info.setIdKey(pubkey);
-                info.setHost(m.get("host").toString());
-                info.setPort(Integer.parseInt(m.get("port").toString()));
-                
-                DataStore.insert(info);
+                Object obj = data.get("data");
+                if(obj != null){
+                    Map m = (HashMap)obj;
+                    RouterInfo info = new RouterInfo();
+                    info.setIdKey(pubkey);
+                    info.setHost(m.get("host").toString());
+                    info.setPort(Integer.parseInt(m.get("port").toString()));
+
+                    DataStore.insert(info);
+                }
                 
                 response.put("command", "done");
                 

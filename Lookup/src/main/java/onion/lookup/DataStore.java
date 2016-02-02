@@ -21,8 +21,10 @@ public class DataStore {
         while(iter.hasNext()){
             DataEntity entity = iter.next();
             RouterInfo info = entity.getData();
-            if(info.getIdKey().equals(key))
+            if(info.getIdKey().equals(key)){
+                entity.updateLastPing();
                 return entity;
+            }
         }
         return null;
     }

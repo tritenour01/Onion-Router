@@ -63,16 +63,20 @@ public class RegisterProtocol {
                 done = true;
                 break;
             case "challenge-success":
-                ConfigHelper config = ConfigHelper.getInstance();
-                String host = config.getValue("host");
-                String port = config.getValue("port");
-                
-                Map m = new HashMap();
-                m.put("host", host);
-                m.put("port", port);
-                
                 response.put("command", "data");
-                response.put("data", m);
+                
+                String requirement = data.get("data").toString();
+                if(requirement.equals("required")){
+                    ConfigHelper config = ConfigHelper.getInstance();
+                    String host = config.getValue("host");
+                    String port = config.getValue("port");
+
+                    Map m = new HashMap();
+                    m.put("host", host);
+                    m.put("port", port);
+
+                    response.put("data", m);
+                }
                 
                 break;
             case "done":
