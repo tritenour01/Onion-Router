@@ -26,4 +26,8 @@ public class DataEntity {
     public void updateLastPing(){
         lastPing = new Date();
     }
+    
+    public String toJSON(){
+        return data.toJSON();
+    }
 }

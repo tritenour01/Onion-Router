@@ -37,4 +37,12 @@ public class RouterInfo {
     public void setPort(int val){
         port = val;
     }
+    
+    public String toJSON(){
+        return "{" + 
+               "\"host\": \"" + host + "\"" +
+               "\"port\": \"" + port + "\"" +
+               "\"key\": \"" + onionKey + "\"" +
+               "}";
+    }
 }

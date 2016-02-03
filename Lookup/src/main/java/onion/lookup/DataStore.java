@@ -8,6 +8,10 @@ public class DataStore {
     
     private DataStore(){}
     
+    public static ArrayList dump(){
+        return (ArrayList)data.clone();
+    }
+    
     public static RouterInfo lookupByKey(String key){
         DataEntity entity = keyLookup(key);
         if(entity == null)
