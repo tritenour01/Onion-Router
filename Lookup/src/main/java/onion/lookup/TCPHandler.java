@@ -6,14 +6,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class TcpHandler implements Runnable {
+public class TCPHandler implements Runnable {
     private Socket sock;
     private BufferedReader input;
     private PrintWriter output;
     
     private RegisterProtocol proto = new RegisterProtocol(this);
     
-    TcpHandler(Socket s){
+    TCPHandler(Socket s){
         this.sock = s;
         
         try{
