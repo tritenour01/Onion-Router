@@ -1,6 +1,8 @@
 package onion.client;
 
-public class RouterInfo {
+import java.io.Serializable;
+
+public class RouterInfo implements Serializable{
     private String host;
     private int port;
     private String onionKey;

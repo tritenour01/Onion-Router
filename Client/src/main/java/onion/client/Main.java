@@ -1,5 +1,9 @@
 package onion.client;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+
 public class Main {
     public static void main(String[] args){
         
@@ -14,9 +18,16 @@ public class Main {
                 case 1:
                 {
                     String url = cli.getInputCreate();
+                    
                     System.out.println("Building path...");
                     PathBuilder builder = new PathBuilder();
                     RouterInfo path[] = builder.build();
+                    
+                    System.out.println("Processing...");
+                    byte data[] = Bundler.bundle(path);
+                    
+                    System.out.println("Sending Request...");
+                    RequestManager.create(url, data);
                     
                     break;
                 }
