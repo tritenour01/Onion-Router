@@ -12,6 +12,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import onion.shared.ConfigHelper;
 
 public class NetworkState {
     
@@ -37,7 +38,9 @@ public class NetworkState {
     
     private static String requestData()
             throws MalformedURLException, IOException{
-        URL url = new URL("http://127.0.0.1:8081");
+        String serverUrl = ConfigHelper.getInstance().getValue("serverUrl");
+        
+        URL url = new URL(serverUrl);
         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         conn.setRequestMethod("GET");
         

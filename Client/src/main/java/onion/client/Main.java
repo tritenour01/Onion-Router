@@ -17,6 +17,7 @@ public class Main {
                     System.out.println("Building path...");
                     PathBuilder builder = new PathBuilder();
                     RouterInfo path[] = builder.build();
+                    
                     break;
                 }
                 case 2:
