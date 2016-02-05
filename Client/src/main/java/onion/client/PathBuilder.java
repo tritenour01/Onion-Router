@@ -14,7 +14,7 @@ public class PathBuilder {
         ArrayList<RouterInfo> routers = NetworkState.dump();
         
         int numNodes = routers.size();
-        if(numNodes <= pathLength){
+        if(numNodes < pathLength){
             System.out.println("Not enough nodes in the network for a path of length " + pathLength);
             return null;
         }

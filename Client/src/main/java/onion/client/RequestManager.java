@@ -5,9 +5,11 @@ import java.util.ArrayList;
 public class RequestManager {
     private static ArrayList<Request> requests = new ArrayList<>();
     
-    public static void create(String url, byte data[]){
-        Request newReq = new Request(url);
+    public static void create(String url, Onion data, RouterInfo path[]){
+        Request newReq = new Request(url, path);
         requests.add(newReq);
-        //start process of sending data to router
+        
+        RequestRunner run = new RequestRunner(newReq);
+        new Thread(run).start();
     }
 }

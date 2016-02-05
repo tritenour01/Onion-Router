@@ -24,10 +24,10 @@ public class Main {
                     RouterInfo path[] = builder.build();
                     
                     System.out.println("Processing...");
-                    byte data[] = Bundler.bundle(path);
+                    Onion onion = Bundler.bundle(path);
                     
                     System.out.println("Sending Request...");
-                    RequestManager.create(url, data);
+                    RequestManager.create(url, onion, path);
                     
                     break;
                 }

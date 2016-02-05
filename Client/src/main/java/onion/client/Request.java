@@ -13,10 +13,13 @@ public class Request {
     private Date startTime;
     private Date endTime;
     
-    public Request(String url){
+    private RouterInfo path[];
+    
+    public Request(String url, RouterInfo path[]){
         state = State.PENDING;
         this.url = url;
         startTime = new Date();
+        this.path = path;
     }
     
     public void complete(){
@@ -27,5 +30,9 @@ public class Request {
     public void failed(){
         state = State.FAIL;
         endTime = new Date();
+    }
+    
+    public RouterInfo[] getPath(){
+        return path;
     }
 }
