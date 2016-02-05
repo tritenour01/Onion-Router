@@ -13,7 +13,10 @@ public class Main {
             switch(option){
                 case 1:
                 {
-                    String val = cli.getInputCreate();
+                    String url = cli.getInputCreate();
+                    System.out.println("Building path...");
+                    PathBuilder builder = new PathBuilder();
+                    RouterInfo path[] = builder.build();
                     break;
                 }
                 case 2:

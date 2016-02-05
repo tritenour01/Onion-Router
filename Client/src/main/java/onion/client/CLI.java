@@ -16,7 +16,8 @@ public class CLI {
     
     public String getInputCreate(){
         System.out.println("Enter request url");
-        return "";
+        System.out.print(": ");
+        return scanner.nextLine();
     }
     
     public int getInputList(){
