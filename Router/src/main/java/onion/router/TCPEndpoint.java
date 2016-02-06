@@ -10,7 +10,7 @@ public class TCPEndpoint implements Runnable{
     public void run(){
         try{
             ConfigHelper config = ConfigHelper.getInstance();
-            int port = Integer.parseInt(config.getValue("tcpPort"));
+            int port = Integer.parseInt(config.getValue("port"));
             
             ServerSocket server = new ServerSocket(port);
             System.out.println("Listening on port " + port + ", waiting for connection");

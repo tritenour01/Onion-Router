@@ -22,9 +22,12 @@ public class RegisterProtocol {
     }
     
     public void init(){
+        ConfigHelper config = ConfigHelper.getInstance();
+        String key = config.getValue("key");
+        
         JSONObject json = new JSONObject();
         json.put("command", "init");
-        json.put("data", "test");
+        json.put("data", key);
         ping.write(json.toString());
     }
     

@@ -9,7 +9,9 @@ public class RequestRunner implements Runnable{
     }
     
     public void run(){
-        
+        RouterInfo path[] = req.getPath();
+        Connection conn = ConnectionManager.get(path[0]);
+        RoutingProtocol proto = conn.getProtocol();
     }
     
 }
