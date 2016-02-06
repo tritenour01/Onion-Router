@@ -3,11 +3,13 @@ package onion.lookup;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import onion.shared.Protocol;
+import onion.shared.TCPHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class RegisterProtocol {
+public class RegisterProtocol implements Protocol{
     private enum State{
         INIT, CHALLENGE, CHALLENGE_FAIL,
         DATA, DONE
@@ -18,10 +20,6 @@ public class RegisterProtocol {
     State state = State.INIT;
     int challengeVal;
     String pubkey;
-    
-    public RegisterProtocol(TCPHandler handler){
-        this.handler = handler;
-    }
     
     public void handleInput(String data){
         JSONObject json;
@@ -109,5 +107,9 @@ public class RegisterProtocol {
         
         if(response != null)
             handler.write(response.toString());
+    }
+    
+    public void setHandler(TCPHandler h){
+        handler = h;
     }
 }

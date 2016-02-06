@@ -1,15 +1,18 @@
-package onion.router;
+package onion.shared;
 
 import java.io.IOException;
 import java.net.Socket;
-import onion.shared.SocketWrapper;
 
 public class TCPHandler implements Runnable{
+    
     private SocketWrapper socket;
     
-    private RoutingProtocol proto = new RoutingProtocol(this);
+    private Protocol proto;
     
-    TCPHandler(Socket s){
+    public TCPHandler(Socket s, Protocol p){
+        proto = p;
+        proto.setHandler(this);
+        
         try{
             socket = new SocketWrapper(s);
         }
@@ -21,6 +24,7 @@ public class TCPHandler implements Runnable{
     
     public void run(){
         System.out.println("TCP handler started");
+        
         try{
             String data;
             while((data = socket.read()) != null){
@@ -32,10 +36,12 @@ public class TCPHandler implements Runnable{
             System.out.println("Caught IOException");
             System.out.println(e);
         }
+        
         System.out.println("TCP handler exiting");
     }
     
     public void write(String data){
         socket.write(data);
     }
+    
 }

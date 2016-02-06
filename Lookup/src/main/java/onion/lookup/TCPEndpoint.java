@@ -3,7 +3,9 @@ package onion.lookup;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 import onion.shared.ConfigHelper;
+import onion.shared.TCPHandler;
 
 public class TCPEndpoint implements Runnable{
     
@@ -18,7 +20,8 @@ public class TCPEndpoint implements Runnable{
             while(true){
                 Socket sock = server.accept();
                 
-                TCPHandler handler = new TCPHandler(sock);
+                RegisterProtocol proto = new RegisterProtocol();
+                TCPHandler handler = new TCPHandler(sock, proto);
                 new Thread(handler).start();
             }
         }
