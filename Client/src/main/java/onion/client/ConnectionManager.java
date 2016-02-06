@@ -16,8 +16,7 @@ public class ConnectionManager {
         if(connections.get(key) == null){
             System.out.println("CREATING CONNECTION");
             Connection conn = new Connection(host, port);
-            conn.connect();
-            new Thread(conn).start();
+            conn.start();
             connections.put(key, conn);
         }
         

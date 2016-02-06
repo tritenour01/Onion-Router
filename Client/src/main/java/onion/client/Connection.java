@@ -3,12 +3,11 @@ package onion.client;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import onion.shared.SocketWrapper;
+import onion.shared.TCPHandler;
 
-public class Connection implements Runnable{
+public class Connection{
     private String host;
     private int port;
-    
-    private SocketWrapper socket;
     
     private RoutingProtocol proto;
     
@@ -16,41 +15,14 @@ public class Connection implements Runnable{
         this.host = host;
         this.port = port;
         
-        proto = new RoutingProtocol(this);
+        proto = new RoutingProtocol();
     }
     
-    public void run(){
-        try{
-            String data;
-            while((data = socket.read()) != null){
-                System.out.println(data);
-                proto.handleInput(data);
-            }
-        }
-        catch(IOException e){
-            System.out.println("Caught IOException");
-            System.out.println(e);
-        }
+    public void start(){
+        TCPHandler handler = new TCPHandler(host, port, proto);
+        new Thread(handler).run();
     }
-    
-    public void connect(){
-        try{
-            socket = new SocketWrapper(host, port);
-        }
-        catch(UnknownHostException e){
-            System.out.println("Caught unknown host error");
-            System.out.println(e);
-        }
-        catch(IOException e){
-            System.out.println("Caught IOException");
-            System.out.println(e);
-        }
-    }
-    
-    public void write(String data){
-        socket.write(data);
-    }
-    
+   
     public String getHost(){
         return host;
     }

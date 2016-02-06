@@ -1,16 +1,20 @@
 package onion.client;
 
+import onion.shared.Protocol;
+import onion.shared.TCPHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class RoutingProtocol {
+public class RoutingProtocol implements Protocol {
     
-    private Connection conn;
-
-    public RoutingProtocol(Connection conn){
-        this.conn = conn;
+    private TCPHandler handler;
+    
+    public boolean isDone(){
+        return false;
     }
+    
+    public void init(){}
     
     public void handleInput(String data){
         JSONObject json;
@@ -35,6 +39,10 @@ public class RoutingProtocol {
         switch(command){
         
         }
+    }
+    
+    public void setHandler(TCPHandler handler){
+        this.handler = handler;
     }
     
 }
