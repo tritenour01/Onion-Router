@@ -1,26 +1,17 @@
 package onion.lookup;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
+import onion.shared.SocketWrapper;
 
 public class TCPHandler implements Runnable {
-    private Socket sock;
-    private BufferedReader input;
-    private PrintWriter output;
+    private SocketWrapper socket;
     
     private RegisterProtocol proto = new RegisterProtocol(this);
     
     TCPHandler(Socket s){
-        this.sock = s;
-        
         try{
-            this.input = new BufferedReader(
-                new InputStreamReader(sock.getInputStream())
-            );
-            this.output = new PrintWriter(sock.getOutputStream(), true);
+            socket = new SocketWrapper(s);
         }
         catch(IOException e){
             System.out.println("Caught IOException");
@@ -32,7 +23,7 @@ public class TCPHandler implements Runnable {
         System.out.println("TCP handler started");
         try{
             String data;
-            while((data = input.readLine()) != null){
+            while((data = socket.read()) != null){
                 System.out.println(data);
                 proto.handleInput(data);
             }
@@ -45,6 +36,6 @@ public class TCPHandler implements Runnable {
     }
     
     public void write(String data){
-        output.println(data);
+        socket.write(data);
     }
 }

@@ -1,19 +1,14 @@
 package onion.client;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.net.UnknownHostException;
+import onion.shared.SocketWrapper;
 
 public class Connection implements Runnable{
     private String host;
     private int port;
     
-    private Socket sock;
-    private BufferedReader input;
-    private PrintWriter output;
+    private SocketWrapper socket;
     
     private RoutingProtocol proto;
     
@@ -27,7 +22,7 @@ public class Connection implements Runnable{
     public void run(){
         try{
             String data;
-            while((data = read()) != null){
+            while((data = socket.read()) != null){
                 System.out.println(data);
                 proto.handleInput(data);
             }
@@ -40,11 +35,7 @@ public class Connection implements Runnable{
     
     public void connect(){
         try{
-            sock = new Socket(host, port);
-            input = new BufferedReader(
-                    new InputStreamReader(sock.getInputStream())
-            );
-            output = new PrintWriter(sock.getOutputStream(), true);
+            socket = new SocketWrapper(host, port);
         }
         catch(UnknownHostException e){
             System.out.println("Caught unknown host error");
@@ -56,22 +47,8 @@ public class Connection implements Runnable{
         }
     }
     
-    public void disconnect(){
-        try{
-            sock.close();
-        }
-        catch(IOException e){
-            System.out.println("Caught IOException");
-            System.out.println(e);
-        }
-    }
-    
-    private String read() throws IOException{
-        return input.readLine();
-    }
-    
     public void write(String data){
-        output.println(data);
+        socket.write(data);
     }
     
     public String getHost(){
