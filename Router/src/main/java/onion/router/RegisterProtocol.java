@@ -7,15 +7,13 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import onion.shared.ConfigHelper;
+import onion.shared.Protocol;
+import onion.shared.TCPHandler;
 
-public class RegisterProtocol {
-    private RegistryPing ping;
+public class RegisterProtocol implements Protocol{
+    private TCPHandler handler;
     
     private boolean done = false;
-    
-    public RegisterProtocol(RegistryPing ping){
-        this.ping = ping;
-    }
     
     public boolean isDone(){
         return done;
@@ -28,7 +26,7 @@ public class RegisterProtocol {
         JSONObject json = new JSONObject();
         json.put("command", "init");
         json.put("data", key);
-        ping.write(json.toString());
+        handler.write(json.toString());
     }
     
     public void handleInput(String data){
@@ -91,7 +89,11 @@ public class RegisterProtocol {
         }
         
         if(response != null){
-            ping.write(response.toString());
+            handler.write(response.toString());
         }
+    }
+    
+    public void setHandler(TCPHandler handler){
+        this.handler = handler;
     }
 }

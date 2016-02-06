@@ -1,64 +1,23 @@
 package onion.router;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-
 import onion.shared.ConfigHelper;
-import onion.shared.SocketWrapper;
+import onion.shared.TCPHandler;
 
 public class RegistryPing implements Runnable {
-    private SocketWrapper socket;
+    String host;
+    int port;
+    
+    public RegistryPing(){
+        ConfigHelper config = ConfigHelper.getInstance();
+        host = config.getValue("lookupHost");
+        port = Integer.parseInt(config.getValue("lookupPort"));
+    }
     
     public void run(){
-        connect();
+        RegisterProtocol proto = new RegisterProtocol();
         
-        RegisterProtocol proto = new RegisterProtocol(this);
-        proto.init();
-        
-        try{
-            String data;
-            while(proto.isDone() == false && (data = socket.read()) != null){
-                System.out.println(data);
-                proto.handleInput(data);
-            }
-        }
-        catch(IOException e){
-            System.out.println("Caught IOException");
-            System.out.println(e);
-        }
-        
-        disconnect();
+        TCPHandler handler = new TCPHandler(host, port, proto);
+        new Thread(handler).run();
     }
     
-    private void connect(){
-        ConfigHelper config = ConfigHelper.getInstance();
-        String host = config.getValue("lookupHost");
-        int port = Integer.parseInt(config.getValue("lookupPort"));
-        
-        try{
-            socket = new SocketWrapper(host, port);
-        }
-        catch(UnknownHostException e){
-            System.out.println("Caught unknown host error");
-            System.out.println(e);
-        }
-        catch(IOException e){
-            System.out.println("Caught IOException");
-            System.out.println(e);
-        }
-    }
-    
-    private void disconnect(){
-        try{
-            socket.disconnect();
-        }
-        catch(IOException e){
-            System.out.println("Caught IOException");
-            System.out.println(e);
-        }
-    }
-    
-    public void write(String data){
-        socket.write(data);
-    }
 }

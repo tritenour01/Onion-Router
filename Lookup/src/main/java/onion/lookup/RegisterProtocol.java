@@ -21,6 +21,12 @@ public class RegisterProtocol implements Protocol{
     int challengeVal;
     String pubkey;
     
+    public boolean isDone(){
+        return false;
+    }
+    
+    public void init(){}
+    
     public void handleInput(String data){
         JSONObject json;
         

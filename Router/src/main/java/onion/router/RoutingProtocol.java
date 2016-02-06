@@ -14,6 +14,12 @@ public class RoutingProtocol implements Protocol {
         this.handler = handler;
     }
     
+    public boolean isDone(){
+        return false;
+    }
+    
+    public void init(){}
+    
     public void handleInput(String data){
         JSONObject json;
         
