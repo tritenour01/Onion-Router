@@ -1,26 +1,28 @@
-package onion.router;
+package onion.shared;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import onion.shared.ConfigHelper;
-import onion.shared.TCPHandler;
-
-public class TCPEndpoint implements Runnable{
+public class TCPEndpoint implements Runnable {
+    
+    private int port;
+    private Factory factory;
+    
+    public TCPEndpoint(int port, Factory factory){
+        this.port = port;
+        this.factory = factory;
+    }
     
     public void run(){
         try{
-            ConfigHelper config = ConfigHelper.getInstance();
-            int port = Integer.parseInt(config.getValue("port"));
-            
             ServerSocket server = new ServerSocket(port);
-            System.out.println("Listening on port " + port + ", waiting for connection");
+            System.out.println("Listening on port " + port);
             
             while(true){
                 Socket sock = server.accept();
                 
-                RoutingProtocol proto = new RoutingProtocol();
+                Protocol proto = factory.createProtocol();
                 TCPHandler handler = new TCPHandler(sock, proto);
                 new Thread(handler).start();
             }
