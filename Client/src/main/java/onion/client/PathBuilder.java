@@ -1,6 +1,7 @@
 package onion.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class PathBuilder {
@@ -23,7 +24,7 @@ public class PathBuilder {
         
         RouterInfo result[] = new RouterInfo[pathLength];
         for(int i = 0; i < pathLength; i++)
-            result[i] = routers.get(i);
+            result[i] = routers.get(perm[i]);
         
         return result;
     }
@@ -45,6 +46,8 @@ public class PathBuilder {
         int result[] = new int[pathLength];
         for(int i = 0; i < result.length; i++)
             result[i] = a[i];
+        
+        System.out.println(Arrays.toString(a));
         
         return result;
     }
