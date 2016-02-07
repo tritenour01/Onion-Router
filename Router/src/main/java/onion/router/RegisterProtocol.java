@@ -3,16 +3,12 @@ package onion.router;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import onion.shared.ConfigHelper;
 import onion.shared.Protocol;
-import onion.shared.TCPHandler;
 
-public class RegisterProtocol implements Protocol{
-    private TCPHandler handler;
-    
+public class RegisterProtocol extends Protocol{
+
     private boolean done = false;
     
     public boolean isDone(){
@@ -29,24 +25,7 @@ public class RegisterProtocol implements Protocol{
         handler.write(json.toString());
     }
     
-    public void handleInput(String data){
-        JSONObject json;
-        
-        try{
-            JSONParser parser = new JSONParser();
-            json = (JSONObject)parser.parse(data);
-        }
-        catch(ParseException e){
-            System.out.println("Parsing json failed");
-            System.out.println(data);
-            System.out.println(e);
-            return;
-        }
-        
-        process(json);
-    }
-    
-    private void process(JSONObject data){
+    protected void process(JSONObject data){
         String command = data.get("command").toString();
         JSONObject response = new JSONObject();
         
@@ -91,9 +70,5 @@ public class RegisterProtocol implements Protocol{
         if(response != null){
             handler.write(response.toString());
         }
-    }
-    
-    public void setHandler(TCPHandler handler){
-        this.handler = handler;
     }
 }

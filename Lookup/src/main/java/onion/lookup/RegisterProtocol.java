@@ -4,47 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import onion.shared.Protocol;
-import onion.shared.TCPHandler;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-public class RegisterProtocol implements Protocol{
+public class RegisterProtocol extends Protocol{
     private enum State{
         INIT, CHALLENGE, CHALLENGE_FAIL,
         DATA, DONE
     }
     
-    TCPHandler handler;
-    
     State state = State.INIT;
     int challengeVal;
     String pubkey;
     
-    public boolean isDone(){
-        return false;
-    }
-    
-    public void init(){}
-    
-    public void handleInput(String data){
-        JSONObject json;
-        
-        try{
-            JSONParser parser = new JSONParser();
-            json = (JSONObject)parser.parse(data);
-        }
-        catch(ParseException e){
-            System.out.println("Parsing json failed");
-            System.out.println(data);
-            System.out.println(e);
-            return;
-        }
-        
-        process(json);
-    }
-    
-    private void process(JSONObject data){
+    protected void process(JSONObject data){
         String command = data.get("command").toString();
         JSONObject response = new JSONObject();
         
@@ -113,9 +85,5 @@ public class RegisterProtocol implements Protocol{
         
         if(response != null)
             handler.write(response.toString());
-    }
-    
-    public void setHandler(TCPHandler h){
-        handler = h;
     }
 }
