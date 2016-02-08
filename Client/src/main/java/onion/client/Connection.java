@@ -1,8 +1,5 @@
 package onion.client;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import onion.shared.SocketWrapper;
 import onion.shared.TCPHandler;
 
 public class Connection{
@@ -11,16 +8,19 @@ public class Connection{
     
     private RoutingProtocol proto;
     
+    private TCPHandler handler;
+    
     public Connection(String host, int port){
         this.host = host;
         this.port = port;
         
         proto = new RoutingProtocol();
+        
+        handler = new TCPHandler(host, port, proto);
     }
     
     public void start(){
-        TCPHandler handler = new TCPHandler(host, port, proto);
-        new Thread(handler).run();
+        new Thread(handler).start();
     }
    
     public String getHost(){
