@@ -14,8 +14,7 @@ public class RoutingProtocol extends Protocol {
             case "create":
                 response.put("command", "create-success");
                 
-                Random rand = new Random();
-                int sessionId = rand.nextInt();
+                int sessionId = SessionManager.createSession(handler);
                 
                 response.put("data", sessionId);
                 break;
