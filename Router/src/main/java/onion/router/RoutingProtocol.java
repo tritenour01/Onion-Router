@@ -12,11 +12,18 @@ public class RoutingProtocol extends Protocol {
         
         switch(command){
             case "create":
-                response.put("command", "create-success");
-                
-                int sessionId = SessionManager.createSession(handler);
-                
-                response.put("data", sessionId);
+                long sessionId = (long)data.get("sessId");
+                if(SessionManager.createSession((int)sessionId, handler)){
+                    response.put("command", "create-success");
+                    response.put("sessId", sessionId);
+                }
+                else{
+                    response.put("command", "create-failure");
+                    response.put("sessId", sessionId);
+                }
+                break;
+            case "extend":
+                response = null;
                 break;
             default:
                 System.out.println("Unrecognized command: " + command);

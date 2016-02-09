@@ -1,27 +1,19 @@
 package onion.router;
 
-import java.util.Collections;
 import java.util.HashMap;
 import onion.shared.TCPHandler;
 
 public class SessionManager {
-    private static HashMap sessions = new HashMap<Integer, Session>();
+    private static HashMap sessions = new HashMap<Integer, TCPHandler>();
     
-    public static int createSession(TCPHandler handler){
-        int sessionId = 1;
-        try{
-            sessionId = (int)Collections.max(sessions.keySet()) + 1;
-        }
-        catch(Exception e){}
+    public static boolean createSession(int id, TCPHandler handler){
         
-        System.out.println(sessionId);
+        if(sessions.containsKey(id))
+            return false;
         
-        Session newSession = new Session();
-        newSession.setId(sessionId);
-        newSession.setHandler(handler);
+        sessions.put(id, handler);
         
-        sessions.put(sessionId, newSession);
+        return true;
         
-        return sessionId;
     }
 }
