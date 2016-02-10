@@ -1,6 +1,7 @@
 package onion.client;
 
 import java.util.Date;
+import onion.shared.RouterInfo;
 
 public class Request {
     

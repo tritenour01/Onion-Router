@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import onion.shared.ConfigHelper;
+import onion.shared.RouterInfo;
 
 public class NetworkState {
     

@@ -1,4 +1,4 @@
-package onion.client;
+package onion.shared;
 
 import java.io.Serializable;
 

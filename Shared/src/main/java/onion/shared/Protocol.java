@@ -15,6 +15,15 @@ public abstract class Protocol {
     public void init(){}
     
     public void handleInput(String data){
+        JSONObject json = parseJson(data);
+        
+        if(json == null)
+            return;
+        
+        process(json);
+    }
+    
+    protected JSONObject parseJson(String data){
         JSONObject json;
         
         try{
@@ -25,10 +34,10 @@ public abstract class Protocol {
             System.out.println("Parsing json failed");
             System.out.println(data);
             System.out.println(e);
-            return;
+            return null;
         }
         
-        process(json);
+        return json;
     }
     
     abstract protected void process(JSONObject data);

@@ -3,6 +3,7 @@ package onion.client;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import onion.shared.PacketBuilder;
 import onion.shared.Protocol;
 import org.json.simple.JSONObject;
 
@@ -24,55 +25,61 @@ public class RoutingProtocol extends Protocol {
                 future.put((int)sessionId);
                 break;
             }
-            case "extended":
+            case "forward":
             {
                 long sessionId = (long)data.get("sessId");
+                String payload = data.get("payload").toString();
+                handleForward((int)sessionId, payload);
                 
+                break;
+            }
+            default:
+                System.out.println("Unrecognized command " + command);
+        }
+    }
+    
+    private void handleForward(int sessionId, String payload){
+        JSONObject data = parseJson(payload);
+        String command = data.get("command").toString();
+        
+        switch(command){
+            case "extended":
                 String key = "extend:" + sessionId;
                 BlockingFuture future = (BlockingFuture)requests.get(key);
                 
                 future.put(true);
+                
                 break;
-            }
+            default:
+                System.out.println("Unknown forward command " + command);
         }
     }
     
-    public BlockingFuture<Integer> createSession()
-            throws InterruptedException {
-        JSONObject obj = new JSONObject();
-        obj.put("command", "create");
-        
+    public BlockingFuture<Integer> createSession(PacketBuilder builder) {
         Random rand = new Random();
         int sessionId = rand.nextInt(100000);
-        obj.put("sessId", sessionId);
+        
+        String packet = builder.create(sessionId);
         
         BlockingFuture<Integer> future = new BlockingFuture<>();
         
         String key = "create:" + sessionId;
         requests.put(key, future);
 
-        handler.write(obj.toString());
+        handler.write(packet);
 
         return future;
     }
     
-    public BlockingFuture<Boolean> extend(int sessionId, RouterInfo dest){
-        JSONObject obj = new JSONObject();
-        obj.put("command", "extend");
-        obj.put("sessId", sessionId);
-        
-        Map m = new HashMap();
-        m.put("host", dest.getHost());
-        m.put("port", dest.getPort());
-        
-        obj.put("data", m);
+    public BlockingFuture<Boolean> extend(PacketBuilder builder, int sessionId, int destId){
+        String packet = builder.extend(sessionId, destId);
         
         BlockingFuture<Boolean> future = new BlockingFuture<>();
         
         String key = "extend:" + sessionId;
         requests.put(key, future);
         
-        handler.write(obj.toString());
+        handler.write(packet);
         
         return future;
     }

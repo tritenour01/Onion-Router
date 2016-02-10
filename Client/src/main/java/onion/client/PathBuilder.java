@@ -3,6 +3,7 @@ package onion.client;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import onion.shared.RouterInfo;
 
 public class PathBuilder {
     private final int pathLength = 3;

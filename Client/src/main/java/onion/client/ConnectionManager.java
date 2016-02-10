@@ -1,6 +1,7 @@
 package onion.client;
 
 import java.util.HashMap;
+import onion.shared.RouterInfo;
 
 public class ConnectionManager {
     private static HashMap<String, Connection> connections = new HashMap();

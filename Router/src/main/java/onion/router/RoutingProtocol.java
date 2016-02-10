@@ -2,7 +2,7 @@ package onion.router;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+import onion.shared.PacketBuilder;
 import onion.shared.Protocol;
 import onion.shared.TCPHandler;
 import org.json.simple.JSONObject;
@@ -33,32 +33,27 @@ public class RoutingProtocol extends Protocol {
                 int returnId = SessionManager.getAssociatted((int)sessionId);
                 TCPHandler returnHandler = SessionManager.getHandler(returnId);
                 
-                response.put("command", "extended");
-                response.put("sessId", returnId);
+                PacketBuilder builder = new PacketBuilder();
+                String packet = builder.extended(returnId);
                 
-                returnHandler.write(response.toString());
+                returnHandler.write(packet);
                 
                 response = null;
                 break;
             }
-            case "extend":
+            case "forward":
             {
-                Map m = (HashMap)data.get("data");
-                String host = m.get("host").toString();
-                int port = Integer.parseInt(m.get("port").toString());
-                
                 long sessionId = (long)data.get("sessId");
-                System.out.println(sessionId);
-                
-                Connection conn = ConnectionManager.get(host, port);
-                TCPHandler handler = conn.getHandler();
-                
-                int newSession = SessionManager.createSession(handler);
-                SessionManager.associate((int)sessionId, newSession);
-                
-                response.put("command", "create");
-                response.put("sessId", newSession);
-                handler.write(response.toString());
+                int nextId = SessionManager.getAssociatted((int)sessionId);
+                if(nextId == -1){
+                    String payload = data.get("payload").toString();
+                    handleForward((int)sessionId, payload);
+                }
+                else{
+                    TCPHandler nextHandler = SessionManager.getHandler(nextId);
+                    data.put("sessId", nextId);
+                    nextHandler.write(data.toString());
+                }
                 
                 response = null;
                 break;
@@ -70,6 +65,35 @@ public class RoutingProtocol extends Protocol {
         
         if(response != null)
             handler.write(response.toString());
+    }
+    
+    private void handleForward(int sessionId, String payload){
+        JSONObject data = parseJson(payload);
+        String command = data.get("command").toString();
+        
+        JSONObject response = new JSONObject();
+
+        switch(command){
+            case "extend":
+            {
+                Map m = (HashMap)data.get("data");
+                String host = m.get("host").toString();
+                int port = Integer.parseInt(m.get("port").toString());
+
+                Connection conn = ConnectionManager.get(host, port);
+                TCPHandler newHandler = conn.getHandler();
+
+                int newSession = SessionManager.createSession(newHandler);
+                SessionManager.associate((int)sessionId, newSession);
+                
+                response.put("command", "create");
+                response.put("sessId", newSession);
+                newHandler.write(response.toString());
+                break;
+            }
+            default:
+                System.out.println("Unrecognized forward command " + command);
+        }
     }
     
 }

@@ -1,8 +1,6 @@
 package onion.client;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
+import onion.shared.RouterInfo;
 
 public class Main {
     public static void main(String[] args){
@@ -23,11 +21,8 @@ public class Main {
                     PathBuilder builder = new PathBuilder();
                     RouterInfo path[] = builder.build();
                     
-                    System.out.println("Processing...");
-                    Onion onion = Bundler.bundle(path);
-                    
                     System.out.println("Sending Request...");
-                    RequestManager.create(url, onion, path);
+                    RequestManager.create(url, path);
                     
                     break;
                 }
