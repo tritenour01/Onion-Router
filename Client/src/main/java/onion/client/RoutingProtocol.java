@@ -15,6 +15,7 @@ public class RoutingProtocol extends Protocol {
         
         switch(command){
             case "create-success":
+            {
                 long sessionId = (long)data.get("sessId");
                 
                 String key = "create:" + sessionId;
@@ -22,6 +23,17 @@ public class RoutingProtocol extends Protocol {
                 
                 future.put((int)sessionId);
                 break;
+            }
+            case "extended":
+            {
+                long sessionId = (long)data.get("sessId");
+                
+                String key = "extend:" + sessionId;
+                BlockingFuture future = (BlockingFuture)requests.get(key);
+                
+                future.put(true);
+                break;
+            }
         }
     }
     

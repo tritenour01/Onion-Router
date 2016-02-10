@@ -34,4 +34,8 @@ public class Connection{
     public RoutingProtocol getProtocol(){
         return proto;
     }
+    
+    public TCPHandler getHandler(){
+        return handler;
+    }
 }
