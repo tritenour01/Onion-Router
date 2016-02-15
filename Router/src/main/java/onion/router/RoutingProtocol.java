@@ -91,6 +91,14 @@ public class RoutingProtocol extends Protocol {
                 newHandler.write(response.toString());
                 break;
             }
+            case "request":
+            {
+                String url = data.get("data").toString();
+                HTTPRequest request = new HTTPRequest(sessionId, url, handler);
+                new Thread(request).start();
+                
+                break;
+            }
             default:
                 System.out.println("Unrecognized forward command " + command);
         }

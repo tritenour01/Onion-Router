@@ -1,11 +1,5 @@
 package onion.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.json.simple.JSONArray;
@@ -13,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import onion.shared.ConfigHelper;
+import onion.shared.HTTPRequestHelper;
 import onion.shared.RouterInfo;
 
 public class NetworkState {
@@ -25,7 +20,8 @@ public class NetworkState {
         
         try{
             if(data == null){
-                String jsonStr = requestData();
+                String serverUrl = ConfigHelper.getInstance().getValue("serverUrl");
+                String jsonStr = HTTPRequestHelper.request(serverUrl);
                 data = processJson(jsonStr);
             }
 
@@ -35,30 +31,6 @@ public class NetworkState {
             System.out.println(e);
             return null;
         }
-    }
-    
-    private static String requestData()
-            throws MalformedURLException, IOException{
-        String serverUrl = ConfigHelper.getInstance().getValue("serverUrl");
-        
-        URL url = new URL(serverUrl);
-        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-        conn.setRequestMethod("GET");
-        
-        BufferedReader in = new BufferedReader(
-            new InputStreamReader(conn.getInputStream())
-        );
-        
-        String line = "";
-        StringBuilder buf = new StringBuilder();
-        while((line = in.readLine()) != null){
-            buf.append(line);
-        }
-        in.close();
-        
-        String result = buf.toString();
-        
-        return result;
     }
             
     private static ArrayList<RouterInfo> processJson(String jsonStr)

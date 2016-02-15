@@ -23,9 +23,17 @@ public class RequestRunner implements Runnable{
             int sessionId = future.get();
             System.out.println("Session Created");
             
-            BlockingFuture<Boolean> futureExt = proto.extend(builder, sessionId, 0);
-            futureExt.get();
-            System.out.println("Circuit Extended");
+            for(int i = 0; i < path.length - 1; i++){
+                BlockingFuture<Boolean> futureExt = proto.extend(builder, sessionId, i);
+                futureExt.get();
+                System.out.println("Circuit Extended ");
+            }
+            
+            System.out.println("Circuit Built");
+            System.out.println("Sending Request");
+            
+            BlockingFuture<String> futureReq = proto.request(builder, sessionId, req.getUrl());
+            String response = futureReq.get();
         }
         catch(Exception e){
             System.out.println("Request execution failed");

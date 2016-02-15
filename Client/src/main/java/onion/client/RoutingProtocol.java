@@ -84,4 +84,17 @@ public class RoutingProtocol extends Protocol {
         return future;
     }
     
+    public BlockingFuture<String> request(PacketBuilder builder, int sessionId, String url){
+        String packet = builder.request(sessionId, url);
+        
+        BlockingFuture<String> future = new BlockingFuture<>();
+        
+        String key = "request:" + sessionId;
+        requests.put(key, future);
+        
+        handler.write(packet);
+        
+        return future;
+    }
+    
 }

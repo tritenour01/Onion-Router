@@ -57,4 +57,17 @@ public class PacketBuilder {
         obj.put("payload", payload.toString());
         return obj.toString();
     }
+    
+    public String request(int sessionId, String url){
+        JSONObject obj = new JSONObject();
+        obj.put("command", "forward");
+        obj.put("sessId", sessionId);
+        
+        JSONObject payload = new JSONObject();
+        payload.put("command", "request");
+        payload.put("data", url);
+        
+        obj.put("payload", payload.toString());
+        return obj.toString();
+    }
 }

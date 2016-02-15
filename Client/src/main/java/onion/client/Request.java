@@ -33,6 +33,10 @@ public class Request {
         endTime = new Date();
     }
     
+    public String getUrl(){
+        return url;
+    }
+    
     public RouterInfo[] getPath(){
         return path;
     }
