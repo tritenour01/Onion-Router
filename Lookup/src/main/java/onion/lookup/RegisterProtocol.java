@@ -1,9 +1,13 @@
 package onion.lookup;
 
+import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import onion.shared.Base64Helper;
+import onion.shared.KeyUtil;
 import onion.shared.Protocol;
+import onion.shared.RSAHelper;
 import org.json.simple.JSONObject;
 
 public class RegisterProtocol extends Protocol{
@@ -40,8 +44,15 @@ public class RegisterProtocol extends Protocol{
                 if(state != State.CHALLENGE)
                     return;
                 
-                long val = (long)data.get("data");
-                if(val == challengeVal){
+                String cipherText = data.get("data").toString();
+                
+                byte decodedKey[] = Base64Helper.decode(pubkey);
+                PublicKey key = KeyUtil.createPublicKey(decodedKey);
+                
+                String text = RSAHelper.decrypt(cipherText, key);
+                System.out.println(text);
+                
+                if(text.equals(Integer.toString(challengeVal))){
                     response.put("command", "challenge-success");
                     
                     if(DataStore.lookupByKey(pubkey) == null)

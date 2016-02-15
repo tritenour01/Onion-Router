@@ -1,11 +1,16 @@
 package onion.router;
 
+import java.security.Key;
+import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.Map;
+import onion.shared.Base64Helper;
 import org.json.simple.JSONObject;
 
 import onion.shared.ConfigHelper;
 import onion.shared.Protocol;
+import onion.shared.RSAHelper;
+import onion.shared.KeyUtil;
 
 public class RegisterProtocol extends Protocol{
 
@@ -16,12 +21,12 @@ public class RegisterProtocol extends Protocol{
     }
     
     public void init(){
-        ConfigHelper config = ConfigHelper.getInstance();
-        String key = config.getValue("key");
+        Key key = KeyUtil.loadPublic(KeyUtil.KEYS.IDENTITY);
+        String keyStr = Base64Helper.encode(key.getEncoded());
         
         JSONObject json = new JSONObject();
         json.put("command", "init");
-        json.put("data", key);
+        json.put("data", keyStr);
         handler.write(json.toString());
     }
     
@@ -33,8 +38,11 @@ public class RegisterProtocol extends Protocol{
             case "challenge":
                 long val = (long)data.get("data");
                 
+                PrivateKey key = KeyUtil.loadPrivate(KeyUtil.KEYS.IDENTITY);
+                String cipherText = RSAHelper.encrypt(Integer.toString((int)val), key);
+                
                 response.put("command", "challenge-response");
-                response.put("data", val);
+                response.put("data", cipherText);
                 
                 break;
             case "challenge-failure":
