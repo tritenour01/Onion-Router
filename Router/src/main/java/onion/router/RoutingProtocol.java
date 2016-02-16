@@ -1,9 +1,13 @@
 package onion.router;
 
+import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.Map;
+import onion.shared.Base64Helper;
+import onion.shared.KeyUtil;
 import onion.shared.PacketBuilder;
 import onion.shared.Protocol;
+import onion.shared.RSAHelper;
 import onion.shared.TCPHandler;
 import org.json.simple.JSONObject;
 
@@ -45,13 +49,19 @@ public class RoutingProtocol extends Protocol {
             {
                 long sessionId = (long)data.get("sessId");
                 int nextId = SessionManager.getAssociatted((int)sessionId);
+                
+                PrivateKey key = KeyUtil.loadPrivate(KeyUtil.KEYS.ONION);
+                String payload = data.get("payload").toString();
+                byte result[] = RSAHelper.decrypt(payload, key);
+                String newPayload = Base64Helper.encode(result);
+                
                 if(nextId == -1){
-                    String payload = data.get("payload").toString();
-                    handleForward((int)sessionId, payload);
+                    handleForward((int)sessionId, newPayload);
                 }
                 else{
                     TCPHandler nextHandler = SessionManager.getHandler(nextId);
                     data.put("sessId", nextId);
+                    data.put("payload", newPayload);
                     nextHandler.write(data.toString());
                 }
                 
@@ -67,7 +77,8 @@ public class RoutingProtocol extends Protocol {
             handler.write(response.toString());
     }
     
-    private void handleForward(int sessionId, String payload){
+    private void handleForward(int sessionId, String encodedPayload){
+        String payload = new String(Base64Helper.decode(encodedPayload));
         JSONObject data = parseJson(payload);
         String command = data.get("command").toString();
         

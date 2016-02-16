@@ -2,6 +2,7 @@ package onion.router;
 
 import java.security.Key;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 import onion.shared.Base64Helper;
@@ -36,21 +37,28 @@ public class RegisterProtocol extends Protocol{
         
         switch(command){
             case "challenge":
+            {
                 long val = (long)data.get("data");
+                String valStr = Integer.toString((int)val);
                 
                 PrivateKey key = KeyUtil.loadPrivate(KeyUtil.KEYS.IDENTITY);
-                String cipherText = RSAHelper.encrypt(Integer.toString((int)val), key);
+                byte cipherText[] = RSAHelper.encrypt(valStr.getBytes(), key);
+                String cipherTextEncoded = Base64Helper.encode(cipherText);
                 
                 response.put("command", "challenge-response");
-                response.put("data", cipherText);
+                response.put("data", cipherTextEncoded);
                 
                 break;
+            }
             case "challenge-failure":
+            {
                 System.out.println("Challenge failed");
                 response = null;
                 done = true;
                 break;
+            }
             case "challenge-success":
+            {
                 response.put("command", "data");
                 
                 String requirement = data.get("data").toString();
@@ -58,19 +66,26 @@ public class RegisterProtocol extends Protocol{
                     ConfigHelper config = ConfigHelper.getInstance();
                     String host = config.getValue("host");
                     String port = config.getValue("port");
+                    
+                    PublicKey key = KeyUtil.loadPublic(KeyUtil.KEYS.ONION);
+                    String keyStr = Base64Helper.encode(key.getEncoded());
 
                     Map m = new HashMap();
                     m.put("host", host);
                     m.put("port", port);
+                    m.put("key", keyStr);
 
                     response.put("data", m);
                 }
                 
                 break;
+            }
             case "done":
+            {
                 response = null;
                 done = true;
                 break;
+            }
             default:
                 response = null;
         }

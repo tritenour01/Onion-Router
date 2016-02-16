@@ -1,5 +1,6 @@
 package onion.shared;
 
+import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.JSONObject;
@@ -42,7 +43,9 @@ public class PacketBuilder {
         m.put("port", dest.getPort());
         payload.put("data", m);
         
-        obj.put("payload", payload.toString());
+        String payloadStr = processPayload(payload.toString(), destId);
+        
+        obj.put("payload", payloadStr);
         return obj.toString();
     }
     
@@ -54,7 +57,9 @@ public class PacketBuilder {
         JSONObject payload = new JSONObject();
         payload.put("command", "extended");
         
-        obj.put("payload", payload.toString());
+        String payloadStr = processPayload(payload.toString());
+        
+        obj.put("payload", payloadStr);
         return obj.toString();
     }
     
@@ -67,7 +72,32 @@ public class PacketBuilder {
         payload.put("command", "request");
         payload.put("data", url);
         
-        obj.put("payload", payload.toString());
+        String payloadStr = processPayload(payload.toString());
+        
+        obj.put("payload", payloadStr);
         return obj.toString();
+    }
+    
+    private String processPayload(String payload){
+        if(mode == Mode.ROUTER)
+            return payload;
+        
+        return processPayload(payload, path.length - 1);
+    }
+    
+    private String processPayload(String payload, int dest){
+        if(mode == Mode.ROUTER)
+            return payload;
+        
+        byte cipherText[] = payload.getBytes();
+        for(int i = dest; i >= 0; i--){
+            String keyStr = path[i].getOnionKey();
+            byte keyDecoded[] = Base64Helper.decode(keyStr);
+            PublicKey key = KeyUtil.createPublicKey(keyDecoded);
+            
+            cipherText = RSAHelper.encrypt(cipherText, key);
+        }
+        
+        return Base64Helper.encode(cipherText);
     }
 }

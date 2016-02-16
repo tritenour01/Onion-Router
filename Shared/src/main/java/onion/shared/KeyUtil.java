@@ -80,12 +80,14 @@ public class KeyUtil {
     
     private static File openFile(KEYS key, TYPE type){
         String filename = "";
+        ConfigHelper config = ConfigHelper.getInstance();
+        
         switch(key){
             case IDENTITY:
-                filename = "id";
+                filename = config.getValue("idKeyPrefix");
                 break;
             case ONION:
-                filename = "onion";
+                filename = config.getValue("onionKeyPrefix");
                 break;
         }
         

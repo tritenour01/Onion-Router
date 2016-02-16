@@ -49,7 +49,7 @@ public class RegisterProtocol extends Protocol{
                 byte decodedKey[] = Base64Helper.decode(pubkey);
                 PublicKey key = KeyUtil.createPublicKey(decodedKey);
                 
-                String text = RSAHelper.decrypt(cipherText, key);
+                String text = new String(RSAHelper.decrypt(cipherText, key));
                 System.out.println(text);
                 
                 if(text.equals(Integer.toString(challengeVal))){
@@ -80,6 +80,7 @@ public class RegisterProtocol extends Protocol{
                     info.setIdKey(pubkey);
                     info.setHost(m.get("host").toString());
                     info.setPort(Integer.parseInt(m.get("port").toString()));
+                    info.setOnionKey(m.get("key").toString());
 
                     DataStore.insert(info);
                 }
