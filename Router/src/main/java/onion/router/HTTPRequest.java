@@ -1,6 +1,7 @@
 package onion.router;
 
 import onion.shared.HTTPRequestHelper;
+import onion.shared.PacketBuilder;
 import onion.shared.TCPHandler;
 
 public class HTTPRequest implements Runnable {
@@ -16,11 +17,18 @@ public class HTTPRequest implements Runnable {
     }
     
     public void run(){
+        PacketBuilder builder = new PacketBuilder();
+        
         try{
             String response = HTTPRequestHelper.request(url);
+            
+            String packet = builder.response(sessionId, true, response);
+            handler.write(packet);
             System.out.println(response);
         }
         catch(Exception e){
+            String packet = builder.response(sessionId, false, e.toString());
+            handler.write(packet);
             System.out.println("Request failed");
             System.out.println(e);
         }

@@ -44,12 +44,24 @@ public class RoutingProtocol extends Protocol {
         
         switch(command){
             case "extended":
+            {
                 String key = "extend:" + sessionId;
                 BlockingFuture future = (BlockingFuture)requests.get(key);
                 
                 future.put(true);
                 
                 break;
+            }
+            case "response":
+            {
+                String key = "request:" + sessionId;
+                BlockingFuture future = (BlockingFuture)requests.get(key);
+                
+                String response = data.get("data").toString();
+                future.put(response);
+                
+                break;
+            }
             default:
                 System.out.println("Unknown forward command " + command);
         }

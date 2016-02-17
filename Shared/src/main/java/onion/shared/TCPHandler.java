@@ -10,9 +10,14 @@ public class TCPHandler implements Runnable{
     
     private Protocol proto;
     
+    public enum Mode {INBOUND, OUTBOUND};
+    private Mode mode;
+    
     public TCPHandler(Socket s, Protocol p){
         proto = p;
         proto.setHandler(this);
+        
+        mode = Mode.INBOUND;
         
         try{
             socket = new SocketWrapper(s);
@@ -26,6 +31,8 @@ public class TCPHandler implements Runnable{
     public TCPHandler(String host, int port, Protocol p){
         proto = p;
         proto.setHandler(this);
+        
+        mode = Mode.OUTBOUND;
         
         try{
             socket = new SocketWrapper(host, port);
@@ -70,6 +77,10 @@ public class TCPHandler implements Runnable{
     
     public void write(String data){
         socket.write(data);
+    }
+    
+    public Mode getMode(){
+        return mode;
     }
     
 }

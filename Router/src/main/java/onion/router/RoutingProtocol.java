@@ -49,19 +49,29 @@ public class RoutingProtocol extends Protocol {
             {
                 long sessionId = (long)data.get("sessId");
                 int nextId = SessionManager.getAssociatted((int)sessionId);
+                TCPHandler.Mode mode = handler.getMode();
                 
-                PrivateKey key = KeyUtil.loadPrivate(KeyUtil.KEYS.ONION);
                 String payload = data.get("payload").toString();
-                byte result[] = RSAHelper.decrypt(payload, key);
-                String newPayload = Base64Helper.encode(result);
+                
+                if(mode == TCPHandler.Mode.INBOUND){
+                    PrivateKey key = KeyUtil.loadPrivate(KeyUtil.KEYS.ONION);
+                    byte result[] = RSAHelper.decrypt(payload, key);
+                    payload = Base64Helper.encode(result);
+                }
+                else if(mode == TCPHandler.Mode.OUTBOUND){
+                    PrivateKey key = KeyUtil.loadPrivate(KeyUtil.KEYS.ONION);
+                    byte decoded[] = Base64Helper.decode(payload);
+                    byte result [] = RSAHelper.encrypt(decoded, key);
+                    payload = Base64Helper.encode(result);
+                }
                 
                 if(nextId == -1){
-                    handleForward((int)sessionId, newPayload);
+                    handleForward((int)sessionId, payload);
                 }
                 else{
                     TCPHandler nextHandler = SessionManager.getHandler(nextId);
                     data.put("sessId", nextId);
-                    data.put("payload", newPayload);
+                    data.put("payload", payload);
                     nextHandler.write(data.toString());
                 }
                 

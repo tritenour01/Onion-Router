@@ -1,5 +1,6 @@
 package onion.shared;
 
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,23 +79,43 @@ public class PacketBuilder {
         return obj.toString();
     }
     
-    private String processPayload(String payload){
-        if(mode == Mode.ROUTER)
-            return payload;
+    public String response(int sessionId, boolean success, String data){
+        JSONObject obj = new JSONObject();
+        obj.put("command", "forward");
+        obj.put("sessId", sessionId);
         
-        return processPayload(payload, path.length - 1);
+        JSONObject payload = new JSONObject();
+        payload.put("command", "response");
+        payload.put("success", success);
+        payload.put("data", data);
+        
+        String payloadStr = processPayload(payload.toString());
+        
+        obj.put("payload", payloadStr);
+        return obj.toString();
+    }
+    
+    private String processPayload(String payload){
+        if(mode == Mode.CLIENT)
+            return processPayload(payload, path.length - 1);
+        else
+            return processPayload(payload, -1);
     }
     
     private String processPayload(String payload, int dest){
-        if(mode == Mode.ROUTER)
-            return payload;
-        
         byte cipherText[] = payload.getBytes();
-        for(int i = dest; i >= 0; i--){
-            String keyStr = path[i].getOnionKey();
-            byte keyDecoded[] = Base64Helper.decode(keyStr);
-            PublicKey key = KeyUtil.createPublicKey(keyDecoded);
-            
+        
+        if(mode == Mode.CLIENT){
+            for(int i = dest; i >= 0; i--){
+                String keyStr = path[i].getOnionKey();
+                byte keyDecoded[] = Base64Helper.decode(keyStr);
+                PublicKey key = KeyUtil.createPublicKey(keyDecoded);
+
+                cipherText = RSAHelper.encrypt(cipherText, key);
+            }
+        }
+        else{
+            PrivateKey key = KeyUtil.loadPrivate(KeyUtil.KEYS.ONION);
             cipherText = RSAHelper.encrypt(cipherText, key);
         }
         

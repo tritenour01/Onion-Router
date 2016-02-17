@@ -34,6 +34,9 @@ public class RequestRunner implements Runnable{
             
             BlockingFuture<String> futureReq = proto.request(builder, sessionId, req.getUrl());
             String response = futureReq.get();
+            
+            req.complete(response);
+            System.out.println("Request Complete");
         }
         catch(Exception e){
             System.out.println("Request execution failed");

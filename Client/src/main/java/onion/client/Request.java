@@ -14,6 +14,8 @@ public class Request {
     private Date startTime;
     private Date endTime;
     
+    private String response;
+    
     private RouterInfo path[];
     
     public Request(String url, RouterInfo path[]){
@@ -23,9 +25,10 @@ public class Request {
         this.path = path;
     }
     
-    public void complete(){
+    public void complete(String data){
         state = State.SUCCESS;
         endTime = new Date();
+        response = data;
     } 
     
     public void failed(){
