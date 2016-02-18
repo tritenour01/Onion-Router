@@ -5,14 +5,14 @@ import java.util.Arrays;
 import java.util.Random;
 import onion.shared.RouterInfo;
 
-public class PathBuilder {
+public class PathGenerator {
     private final int pathLength = 3;
     
-    public PathBuilder(){
+    public PathGenerator(){
         
     }
     
-    public RouterInfo[] build(){
+    public RouterInfo[] generate(){
         ArrayList<RouterInfo> routers = NetworkState.dump();
         
         int numNodes = routers.size();

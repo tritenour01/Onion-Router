@@ -6,18 +6,18 @@ import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.JSONObject;
 
-public class PacketBuilder {
+public class PacketHelper {
     
     private enum Mode {CLIENT, ROUTER};
     
     private RouterInfo path[];
     private Mode mode;
     
-    public PacketBuilder(){
+    public PacketHelper(){
         mode = Mode.ROUTER;
     }
     
-    public PacketBuilder(RouterInfo path[]){
+    public PacketHelper(RouterInfo path[]){
         this.path = path;
         mode = Mode.CLIENT;
     }

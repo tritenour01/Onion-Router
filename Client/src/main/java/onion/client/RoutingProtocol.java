@@ -1,9 +1,6 @@
 package onion.client;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import onion.shared.PacketBuilder;
 import onion.shared.Protocol;
 import org.json.simple.JSONObject;
 
@@ -67,46 +64,8 @@ public class RoutingProtocol extends Protocol {
         }
     }
     
-    public BlockingFuture<Integer> createSession(PacketBuilder builder) {
-        Random rand = new Random();
-        int sessionId = rand.nextInt(100000);
-        
-        String packet = builder.create(sessionId);
-        
-        BlockingFuture<Integer> future = new BlockingFuture<>();
-        
-        String key = "create:" + sessionId;
+    public void register(String key, BlockingFuture future){
         requests.put(key, future);
-
-        handler.write(packet);
-
-        return future;
-    }
-    
-    public BlockingFuture<Boolean> extend(PacketBuilder builder, int sessionId, int destId){
-        String packet = builder.extend(sessionId, destId);
-        
-        BlockingFuture<Boolean> future = new BlockingFuture<>();
-        
-        String key = "extend:" + sessionId;
-        requests.put(key, future);
-        
-        handler.write(packet);
-        
-        return future;
-    }
-    
-    public BlockingFuture<String> request(PacketBuilder builder, int sessionId, String url){
-        String packet = builder.request(sessionId, url);
-        
-        BlockingFuture<String> future = new BlockingFuture<>();
-        
-        String key = "request:" + sessionId;
-        requests.put(key, future);
-        
-        handler.write(packet);
-        
-        return future;
     }
     
 }

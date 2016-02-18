@@ -18,8 +18,8 @@ public class Main {
                     String url = cli.getInputCreate();
                     
                     System.out.println("Building path...");
-                    PathBuilder builder = new PathBuilder();
-                    RouterInfo path[] = builder.build();
+                    PathGenerator builder = new PathGenerator();
+                    RouterInfo path[] = builder.generate();
                     
                     System.out.println("Sending Request...");
                     RequestManager.create(url, path);
