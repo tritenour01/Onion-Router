@@ -18,12 +18,10 @@ public class RSAHelper {
         return result;
     }
     
-    public static byte[] decrypt(String EncodedCipherText, Key key){
+    public static byte[] decrypt(byte cipherText[], Key key){
         byte result[] = null;
         
         try{
-            byte cipherText[] = Base64Helper.decode(EncodedCipherText);
-            
             result = process(cipherText, key, Cipher.DECRYPT_MODE);
         }
         catch(Exception e){

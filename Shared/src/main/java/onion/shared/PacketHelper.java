@@ -5,6 +5,8 @@ import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class PacketHelper {
     
@@ -120,5 +122,31 @@ public class PacketHelper {
         }
         
         return Base64Helper.encode(cipherText);
+    }
+    
+    public String decryptPayload(String payload){
+        byte result[] = Base64Helper.decode(payload);
+        JSONParser parser = new JSONParser();
+        
+        for(int i = 0; i < path.length; i++){
+            String keyStr = path[i].getOnionKey();
+            byte keyDecoded[] = Base64Helper.decode(keyStr);
+            PublicKey key = KeyUtil.createPublicKey(keyDecoded);
+            
+            result = RSAHelper.decrypt(result, key);
+            
+            boolean success = true;
+            try{
+                parser.parse(new String(result));
+            }
+            catch(ParseException e){
+                success = false;
+            }
+            
+            if(success == true)
+                break;
+        }
+        
+        return new String(result);
     }
 }

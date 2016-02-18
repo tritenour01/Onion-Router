@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import onion.shared.Base64Helper;
 import onion.shared.KeyUtil;
-import onion.shared.PacketBuilder;
+import onion.shared.PacketHelper;
 import onion.shared.Protocol;
 import onion.shared.RSAHelper;
 import onion.shared.TCPHandler;
@@ -37,7 +37,7 @@ public class RoutingProtocol extends Protocol {
                 int returnId = SessionManager.getAssociatted((int)sessionId);
                 TCPHandler returnHandler = SessionManager.getHandler(returnId);
                 
-                PacketBuilder builder = new PacketBuilder();
+                PacketHelper builder = new PacketHelper();
                 String packet = builder.extended(returnId);
                 
                 returnHandler.write(packet);
@@ -55,7 +55,8 @@ public class RoutingProtocol extends Protocol {
                 
                 if(mode == TCPHandler.Mode.INBOUND){
                     PrivateKey key = KeyUtil.loadPrivate(KeyUtil.KEYS.ONION);
-                    byte result[] = RSAHelper.decrypt(payload, key);
+                    byte decoded[] = Base64Helper.decode(payload);
+                    byte result[] = RSAHelper.decrypt(decoded, key);
                     payload = Base64Helper.encode(result);
                 }
                 else if(mode == TCPHandler.Mode.OUTBOUND){

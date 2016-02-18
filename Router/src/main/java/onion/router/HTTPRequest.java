@@ -1,7 +1,7 @@
 package onion.router;
 
 import onion.shared.HTTPRequestHelper;
-import onion.shared.PacketBuilder;
+import onion.shared.PacketHelper;
 import onion.shared.TCPHandler;
 
 public class HTTPRequest implements Runnable {
@@ -17,7 +17,7 @@ public class HTTPRequest implements Runnable {
     }
     
     public void run(){
-        PacketBuilder builder = new PacketBuilder();
+        PacketHelper builder = new PacketHelper();
         
         try{
             String response = HTTPRequestHelper.request(url);

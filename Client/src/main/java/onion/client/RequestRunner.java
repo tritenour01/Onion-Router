@@ -1,11 +1,14 @@
 package onion.client;
 
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 import onion.shared.PacketHelper;
 import onion.shared.RouterInfo;
 import onion.shared.TCPHandler;
 
 public class RequestRunner implements Runnable{
+    
+    private Semaphore lock;
     
     private Request req;
     private PacketHelper builder;
@@ -15,6 +18,7 @@ public class RequestRunner implements Runnable{
     public RequestRunner(Request req){
         this.req = req;
         builder = new PacketHelper(req.getPath());
+        lock = new Semaphore(1);
     }
     
     public void run(){
@@ -24,21 +28,19 @@ public class RequestRunner implements Runnable{
         handler = conn.getHandler();
         
         try{
-            BlockingFuture<Integer> future = createSession();
-            int sessionId = future.get();
+            int sessionId = createSession();
             System.out.println("Session Created");
             
             for(int i = 0; i < path.length - 1; i++){
-                BlockingFuture<Boolean> futureExt = extend(sessionId, i);
-                futureExt.get();
+                extend(sessionId, i);
                 System.out.println("Circuit Extended ");
             }
             
             System.out.println("Circuit Built");
             System.out.println("Sending Request");
             
-            BlockingFuture<String> futureReq = request(sessionId);
-            String response = futureReq.get();
+            request(sessionId);
+            String response = "";
             
             req.complete(response);
             System.out.println("Request Complete");
@@ -49,42 +51,67 @@ public class RequestRunner implements Runnable{
         }
     }
     
-    private BlockingFuture<Integer> createSession(){
+    private void acquire(){
+        try{
+            lock.acquire();
+        }
+        catch(InterruptedException e){
+            System.out.println("semaphore aquire failed");
+        }
+    }
+    
+    private void lockWait(){
+        acquire();
+        lock.release();
+    }
+    
+    private int createSession(){
+        acquire();
+        
         Random rand = new Random();
         int sessionId = rand.nextInt(100000);
         
+        RequestManager.associate(sessionId, this);
+        
         String packet = builder.create(sessionId);
-        
-        BlockingFuture<Integer> future = new BlockingFuture<>();
-        String key = "create:" + sessionId;
-        proto.register(key, future);
-        
         handler.write(packet);
         
-        return future;
+        lockWait();
+        
+        return sessionId;
     }
     
-    private BlockingFuture<Boolean> extend(int sessionId, int destId){
+    public void sessionCreated(){
+        lock.release();
+    }
+    
+    private void extend(int sessionId, int destId){
+        acquire();
+        
         String packet = builder.extend(sessionId, destId);
-        
-        BlockingFuture<Boolean> future = new BlockingFuture<>();
-        String key = "extend:" + sessionId;
-        proto.register(key, future);
-        
         handler.write(packet);
         
-        return future;
+        lockWait();
     }
     
-    private BlockingFuture<String> request(int sessionId){
+    public void extended(){
+        lock.release();
+    }
+    
+    private void request(int sessionId){
+        acquire();
+        
         String packet = builder.request(sessionId, req.getUrl());
-        
-        BlockingFuture<String> future = new BlockingFuture<>();
-        String key = "request:" + sessionId;
-        proto.register(key, future);
-        
         handler.write(packet);
         
-        return future;
+        lockWait();
+    }
+    
+    public void response(boolean success, String data){
+        lock.release();
+    }
+    
+    public PacketHelper getPacketHelper(){
+        return builder;
     }
 }

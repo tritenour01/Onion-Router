@@ -1,12 +1,9 @@
 package onion.client;
 
-import java.util.HashMap;
 import onion.shared.Protocol;
 import org.json.simple.JSONObject;
 
 public class RoutingProtocol extends Protocol {
-    
-    HashMap requests = new HashMap<String, BlockingFuture>();
     
     protected void process(JSONObject data) {
         String command = data.get("command").toString();
@@ -15,11 +12,10 @@ public class RoutingProtocol extends Protocol {
             case "create-success":
             {
                 long sessionId = (long)data.get("sessId");
+                RequestRunner runner = RequestManager.lookupRunner((int)sessionId);
                 
-                String key = "create:" + sessionId;
-                BlockingFuture future = (BlockingFuture)requests.get(key);
+                runner.sessionCreated();
                 
-                future.put((int)sessionId);
                 break;
             }
             case "forward":
@@ -36,36 +32,29 @@ public class RoutingProtocol extends Protocol {
     }
     
     private void handleForward(int sessionId, String payload){
+        RequestRunner runner = RequestManager.lookupRunner(sessionId);
+        payload = runner.getPacketHelper().decryptPayload(payload);
+        
         JSONObject data = parseJson(payload);
         String command = data.get("command").toString();
         
         switch(command){
             case "extended":
             {
-                String key = "extend:" + sessionId;
-                BlockingFuture future = (BlockingFuture)requests.get(key);
-                
-                future.put(true);
+                runner.extended();
                 
                 break;
             }
             case "response":
-            {
-                String key = "request:" + sessionId;
-                BlockingFuture future = (BlockingFuture)requests.get(key);
-                
+            {   
                 String response = data.get("data").toString();
-                future.put(response);
+                runner.response(true, response);
                 
                 break;
             }
             default:
                 System.out.println("Unknown forward command " + command);
         }
-    }
-    
-    public void register(String key, BlockingFuture future){
-        requests.put(key, future);
     }
     
 }

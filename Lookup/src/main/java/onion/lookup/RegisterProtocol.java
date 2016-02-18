@@ -49,7 +49,8 @@ public class RegisterProtocol extends Protocol{
                 byte decodedKey[] = Base64Helper.decode(pubkey);
                 PublicKey key = KeyUtil.createPublicKey(decodedKey);
                 
-                String text = new String(RSAHelper.decrypt(cipherText, key));
+                byte decoded[] = Base64Helper.decode(cipherText);
+                String text = new String(RSAHelper.decrypt(decoded, key));
                 System.out.println(text);
                 
                 if(text.equals(Integer.toString(challengeVal))){
