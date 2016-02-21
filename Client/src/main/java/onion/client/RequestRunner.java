@@ -40,12 +40,10 @@ public class RequestRunner implements Runnable{
             System.out.println("Sending Request");
             
             request(sessionId);
-            String response = "";
-            
-            req.complete(response);
             System.out.println("Request Complete");
         }
         catch(Exception e){
+            req.failed(e.getMessage());
             System.out.println("Request execution failed");
             System.out.println(e);
         }
@@ -109,6 +107,10 @@ public class RequestRunner implements Runnable{
     
     public void response(boolean success, String data){
         lock.release();
+        if(success)
+            req.complete(data);
+        else
+            req.failed(data);
     }
     
     public PacketHelper getPacketHelper(){

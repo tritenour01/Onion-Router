@@ -1,5 +1,6 @@
 package onion.client;
 
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class CLI {
@@ -21,8 +22,21 @@ public class CLI {
     }
     
     public int getInputList(){
-        System.out.println("No requests");
-        return 0;
+        if(RequestManager.num() == 0){
+            System.out.println("No requests");
+            return 0;
+        }
+        else{
+            System.out.println("Please Select Request to View Details:");
+            Iterator<Request> iter = RequestManager.iterator();
+            int count = 1;
+            while(iter.hasNext()){
+                Request r = iter.next();
+                System.out.println(count + ") " + r.getStart() + ", " + r.getUrl());
+                count++;
+            }
+            return readInt(RequestManager.num());
+        }
     }
     
     public int readInt(int maxVal){
@@ -31,8 +45,8 @@ public class CLI {
             System.out.print(": ");
             try{
                 int val = Integer.parseInt(scanner.nextLine());
-                if(val < 0 || val > maxVal){
-                    System.out.println("Expected a number between 0 and " + maxVal);
+                if(val < 1 || val > maxVal){
+                    System.out.println("Expected a number between 1 and " + maxVal);
                     continue;
                 }
                 result = val;

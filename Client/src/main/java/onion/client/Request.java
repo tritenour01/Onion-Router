@@ -31,9 +31,10 @@ public class Request {
         response = data;
     } 
     
-    public void failed(){
+    public void failed(String data){
         state = State.FAIL;
         endTime = new Date();
+        response = data;
     }
     
     public String getUrl(){
@@ -42,5 +43,44 @@ public class Request {
     
     public RouterInfo[] getPath(){
         return path;
+    }
+    
+    public String getResponse(){
+        return response;
+    }
+    
+    public String getStart(){
+        return startTime.toString();
+    }
+    
+    public String getEnd(){
+        return endTime.toString();
+    }
+    
+    public String getState(){
+        switch(state){
+            case PENDING:
+                return "Pending";
+            case FAIL:
+                return "Fail";
+            case SUCCESS:
+                return "Success";
+            default:
+                return "";
+        }
+    }
+    
+    public String summary(){
+        int maxCharacters = 2000;
+        String responseStr = response.substring(0, Math.min(response.length(), maxCharacters));
+        if(response.length() > maxCharacters)
+            responseStr += "... string trimmed";
+        
+        return "State: " + getState() + "\n" +
+               "URL: " + url + "\n" +
+               "Start: " + getStart() + "\n" +
+               "End: " + getEnd() + "\n" +
+               "Response: " + responseStr + "\n";
+               
     }
 }

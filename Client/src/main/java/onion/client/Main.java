@@ -29,6 +29,10 @@ public class Main {
                 case 2:
                 {
                     int val = cli.getInputList();
+                    if(val > 0){
+                        Request r = RequestManager.get(val - 1);
+                        System.out.println(r.summary());
+                    }
                     break;
                 }
                 case 3:

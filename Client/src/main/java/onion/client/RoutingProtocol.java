@@ -48,7 +48,8 @@ public class RoutingProtocol extends Protocol {
             case "response":
             {   
                 String response = data.get("data").toString();
-                runner.response(true, response);
+                boolean success = (boolean)data.get("success");
+                runner.response(success, response);
                 
                 break;
             }

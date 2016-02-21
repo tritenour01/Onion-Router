@@ -2,6 +2,7 @@ package onion.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import onion.shared.RouterInfo;
 
 public class RequestManager {
@@ -23,5 +24,17 @@ public class RequestManager {
     
     public static RequestRunner lookupRunner(int sessionId){
         return runners.get(sessionId);
+    }
+    
+    public static int num(){
+        return requests.size();
+    }
+    
+    public static Iterator<Request> iterator(){
+        return requests.iterator();
+    }
+    
+    public static Request get(int index){
+        return requests.get(index);
     }
 }
