@@ -15,8 +15,10 @@ public class DataEntity {
         return data;
     }
     
-    public Date getLastPing(){
-        return lastPing;
+    public boolean isOld(){
+        Date now = new Date();
+        Date d = new Date(lastPing.getTime() + (5 * 60000));
+        return now.after(d);
     }
     
     public void setData(RouterInfo info){

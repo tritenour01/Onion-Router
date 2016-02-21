@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class DataStore {
-    private static final ArrayList<DataEntity> data = new ArrayList<DataEntity>();
+    private static final ArrayList<DataEntity> data = new ArrayList();
     
     private DataStore(){}
     
@@ -43,5 +43,17 @@ public class DataStore {
             entity.setData(instance);
             entity.updateLastPing();
         }
+    }
+    
+    public static void cleanup(){
+        ArrayList<DataEntity> old = new ArrayList();
+        
+        for(DataEntity e : data){
+            if(e.isOld())
+                old.add(e);
+        }
+        
+        for(DataEntity e : old)
+            data.remove(e);
     }
 }
