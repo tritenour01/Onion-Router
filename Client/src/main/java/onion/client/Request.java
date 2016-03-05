@@ -57,6 +57,14 @@ public class Request {
         return endTime.toString();
     }
     
+    public boolean isDone(){
+        return state != State.PENDING;
+    }
+    
+    public long getTime(){
+        return endTime.getTime() - startTime.getTime();
+    }
+    
     public String getState(){
         switch(state){
             case PENDING:
